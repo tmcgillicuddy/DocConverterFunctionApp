@@ -83,6 +83,25 @@ namespace DocConverterFunctionApp
             var htmlDoc = new HtmlAgilityPack.HtmlDocument();
             htmlDoc.LoadHtml(htmlContent);
 
+            // Log the base directory
+            var baseDirectory = FindCommonBaseDirectory(resourceFiles);
+            log.LogInformation($"Base directory for resources: {baseDirectory}");
+
+            // Log all resource files
+            log.LogInformation("Unzipping resource files...");
+            foreach (var resourceFile in resourceFiles)
+            {
+                log.LogInformation($"Resource file path: {resourceFile}");
+                if (File.Exists(resourceFile))
+                {
+                    log.LogInformation($"File exists: {resourceFile}");
+                }
+                else
+                {
+                    log.LogWarning($"File does not exist: {resourceFile}");
+                }
+            }
+
             // Handle <img> tags
             var imgNodes = htmlDoc.DocumentNode.SelectNodes("//img[@src]");
             if (imgNodes != null)
@@ -96,10 +115,11 @@ namespace DocConverterFunctionApp
                         continue;
                     }
 
+                    // Resolve the resource file
                     var resourceFile = resourceFiles.FirstOrDefault(r => r.EndsWith(src, StringComparison.OrdinalIgnoreCase));
                     if (resourceFile != null && File.Exists(resourceFile))
                     {
-                        log.LogInformation($"Embedding image: {src}");
+                        log.LogInformation($"Embedding image: {resourceFile}");
 
                         // Add the image to the document
                         var image = section.AddParagraph().AppendPicture(File.ReadAllBytes(resourceFile));
@@ -109,39 +129,9 @@ namespace DocConverterFunctionApp
                     }
                     else
                     {
-                        log.LogWarning($"Resource file for <img> tag not found: {src}. Removing the tag.");
+                        var expectedPath = Path.Combine(baseDirectory, src);
+                        log.LogWarning($"Resource file for <img> tag not found: {src}. Expected path: {expectedPath}");
                         imgNode.Remove();
-                    }
-                }
-            }
-
-            // Handle <link> tags for CSS
-            var linkNodes = htmlDoc.DocumentNode.SelectNodes("//link[@rel='stylesheet' and @href]");
-            if (linkNodes != null)
-            {
-                foreach (var linkNode in linkNodes)
-                {
-                    var href = linkNode.GetAttributeValue("href", null);
-                    if (string.IsNullOrEmpty(href))
-                    {
-                        log.LogWarning("Skipping <link> tag with missing 'href' attribute.");
-                        continue;
-                    }
-
-                    var resourceFile = resourceFiles.FirstOrDefault(r => r.EndsWith(href, StringComparison.OrdinalIgnoreCase));
-                    if (resourceFile != null && File.Exists(resourceFile))
-                    {
-                        log.LogInformation($"Inlining CSS: {href}");
-                        var cssContent = File.ReadAllText(resourceFile);
-
-                        // Inline the CSS into a <style> tag
-                        var styleNode = HtmlNode.CreateNode($"<style>{cssContent}</style>");
-                        linkNode.ParentNode.ReplaceChild(styleNode, linkNode);
-                    }
-                    else
-                    {
-                        log.LogWarning($"Resource file for <link> tag not found: {href}. Removing the tag.");
-                        linkNode.Remove();
                     }
                 }
             }
@@ -195,6 +185,36 @@ namespace DocConverterFunctionApp
                 log.LogError($"Error simplifying HTML content: {ex.Message}");
                 throw new InvalidOperationException("Failed to simplify HTML content.", ex);
             }
+        }
+
+        private string FindCommonBaseDirectory(List<string> resourceFiles)
+        {
+            if (resourceFiles == null || resourceFiles.Count == 0)
+            {
+                return string.Empty;
+            }
+
+            // Split the first path into its directory components
+            var commonPathParts = resourceFiles[0].Split(Path.DirectorySeparatorChar);
+
+            foreach (var filePath in resourceFiles)
+            {
+                var pathParts = filePath.Split(Path.DirectorySeparatorChar);
+
+                // Find the common prefix between the current common path and the current file path
+                for (int i = 0; i < commonPathParts.Length; i++)
+                {
+                    if (i >= pathParts.Length || !string.Equals(commonPathParts[i], pathParts[i], StringComparison.OrdinalIgnoreCase))
+                    {
+                        // Trim the common path to the shared prefix
+                        commonPathParts = commonPathParts.Take(i).ToArray();
+                        break;
+                    }
+                }
+            }
+
+            // Combine the common path parts back into a single directory path
+            return Path.Combine(commonPathParts);
         }
     }
 }
