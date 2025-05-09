@@ -77,7 +77,14 @@ namespace DocConverterFunctionApp
                 }
             }
 
-            return Path.Combine(commonPathParts);
+            // Combine the common parts and ensure the leading '/' is preserved
+            var commonPath = Path.Combine(commonPathParts);
+            if (Path.IsPathRooted(normalizedPaths[0]))
+            {
+                commonPath = Path.DirectorySeparatorChar + commonPath;
+            }
+
+            return commonPath;
         }
     }
 }

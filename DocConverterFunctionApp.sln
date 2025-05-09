@@ -1,8 +1,10 @@
-Microsoft Visual Studio Solution File, Format Version 12.00
+﻿Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.2.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DocConverterFunctionApp", "DocConverterFunctionApp/DocConverterFunctionApp.csproj", "{0F7F5F0F-3C0C-0AC2-7C0A-D1723596CF1C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DocConverterFunctionApp", "DocConverterFunctionApp\DocConverterFunctionApp.csproj", "{0F7F5F0F-3C0C-0AC2-7C0A-D1723596CF1C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{D01C1300-EE5B-495A-98BC-BF6CE33C9B03}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -14,6 +16,10 @@ Global
 		{0F7F5F0F-3C0C-0AC2-7C0A-D1723596CF1C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0F7F5F0F-3C0C-0AC2-7C0A-D1723596CF1C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0F7F5F0F-3C0C-0AC2-7C0A-D1723596CF1C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D01C1300-EE5B-495A-98BC-BF6CE33C9B03}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D01C1300-EE5B-495A-98BC-BF6CE33C9B03}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D01C1300-EE5B-495A-98BC-BF6CE33C9B03}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D01C1300-EE5B-495A-98BC-BF6CE33C9B03}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
