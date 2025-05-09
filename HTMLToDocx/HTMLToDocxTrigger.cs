@@ -36,6 +36,7 @@ namespace DocConverterFunctionApp
             // Create a temporary directory to extract the ZIP file
             var tempDir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
             Directory.CreateDirectory(tempDir);
+            log.LogInformation($"Temporary directory created: {tempDir}");
 
             try
             {

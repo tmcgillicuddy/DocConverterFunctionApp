@@ -83,8 +83,8 @@ namespace DocConverterFunctionApp
             var htmlDoc = new HtmlAgilityPack.HtmlDocument();
             htmlDoc.LoadHtml(htmlContent);
 
-            // Log the base directory
-            var baseDirectory = FindCommonBaseDirectory(resourceFiles);
+            // Ensure the base directory is absolute
+            var baseDirectory = Path.GetFullPath(FindCommonBaseDirectory(resourceFiles));
             log.LogInformation($"Base directory for resources: {baseDirectory}");
 
             // Log all resource files
@@ -115,8 +115,9 @@ namespace DocConverterFunctionApp
                         continue;
                     }
 
-                    // Resolve the resource file
-                    var resourceFile = resourceFiles.FirstOrDefault(r => r.EndsWith(src, StringComparison.OrdinalIgnoreCase));
+                    var resourceFile = resourceFiles.FirstOrDefault(r => 
+                        string.Equals(Path.GetFullPath(r), Path.GetFullPath(Path.Combine(baseDirectory, src)), StringComparison.OrdinalIgnoreCase));
+
                     if (resourceFile != null && File.Exists(resourceFile))
                     {
                         log.LogInformation($"Embedding image: {resourceFile}");
@@ -129,7 +130,7 @@ namespace DocConverterFunctionApp
                     }
                     else
                     {
-                        var expectedPath = Path.Combine(baseDirectory, src);
+                        var expectedPath = Path.GetFullPath(Path.Combine(baseDirectory, src));
                         log.LogWarning($"Resource file for <img> tag not found: {src}. Expected path: {expectedPath}");
                         imgNode.Remove();
                     }
@@ -194,10 +195,13 @@ namespace DocConverterFunctionApp
                 return string.Empty;
             }
 
-            // Split the first path into its directory components
-            var commonPathParts = resourceFiles[0].Split(Path.DirectorySeparatorChar);
+            // Normalize all paths to absolute paths
+            var normalizedPaths = resourceFiles.Select(Path.GetFullPath).ToList();
 
-            foreach (var filePath in resourceFiles)
+            // Split the first path into its directory components
+            var commonPathParts = normalizedPaths[0].Split(Path.DirectorySeparatorChar);
+
+            foreach (var filePath in normalizedPaths)
             {
                 var pathParts = filePath.Split(Path.DirectorySeparatorChar);
 
