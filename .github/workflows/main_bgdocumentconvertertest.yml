@@ -29,6 +29,12 @@ jobs:
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
+      - name: 'Restore Dependencies'
+        run: dotnet restore
+
+      - name: 'Run Tests'
+        run: dotnet test --no-build --verbosity normal
+
       - name: 'Resolve Project Dependencies Using Dotnet'
         shell: pwsh
         run: |
@@ -50,4 +56,3 @@ jobs:
           app-name: 'BGDocumentConverterTest'
           slot-name: 'Production'
           package: '${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}/output'
-          
