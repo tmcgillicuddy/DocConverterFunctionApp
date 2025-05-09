@@ -43,13 +43,14 @@ namespace Tests
         public void FindCommonBaseDirectory_ValidPaths_ReturnsCommonBaseDirectory()
         {
             // Arrange
+            var basePath = Path.GetFullPath(Path.Combine("home", "user", "project"));
             var resourceFiles = new List<string>
             {
-                "/home/user/project/file1.txt",
-                "/home/user/project/subdir/file2.txt",
-                "/home/user/project/subdir2/file3.txt"
+                Path.Combine(basePath, "file1.txt"),
+                Path.Combine(basePath, "subdir", "file2.txt"),
+                Path.Combine(basePath, "subdir2", "file3.txt")
             };
-            var expectedCommonBase = "/home/user/project";
+            var expectedCommonBase = basePath;
             var mockLogger = new Mock<ILogger>();
 
             // Act
