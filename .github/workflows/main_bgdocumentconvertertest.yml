@@ -36,7 +36,7 @@ jobs:
         run: dotnet build --configuration Release
 
       - name: 'Run Tests'
-        run: dotnet test --no-build --verbosity normal
+        run: dotnet test --configuration Release --no-build --verbosity normal
 
       - name: 'Resolve Project Dependencies Using Dotnet'
         shell: pwsh
